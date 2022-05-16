@@ -38,7 +38,7 @@ setup(
     name='nsfw_screen_detect',
     package_dir = {"": "src"},
     packages=find_packages(where="src"),
-    url='https://github.com/dickermoshe/nsfw_screen_detect',
+    url='https://github.com/dickermoshe/nsfw_detect_screenshot',
     version='0.1.2',
     zip_safe=False,
 
