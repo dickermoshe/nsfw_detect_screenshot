@@ -4,11 +4,16 @@
 
 from setuptools import setup, find_packages
 
-with open('README.md') as readme_file:
-    readme = readme_file.read()
+with open("README.md", "r", encoding = "utf-8") as fh:
+    long_description = fh.read()
 
 requirements = [
-    
+    'tensorflow',
+    'numpy',
+    'opencv-python',
+    'Pillow',
+    'mss',
+    'pyautogui'
 ]
 
 setup(
@@ -25,12 +30,15 @@ setup(
     description="A small python package for detecting nsfw on a Windows display.",
     install_requires=requirements,
     license="GNU General Public License v3",
-    long_description=readme,
+    long_description=long_description,
+    long_description_content_type = "text/markdown",
     include_package_data=True,
     keywords='nsfw_screen_detect',
     name='nsfw_screen_detect',
-    packages=find_packages(include=['nsfw_screen_detect', 'nsfw_screen_detect.*']),
+    package_dir = {"": "src"},
+    packages=find_packages(where="src"),
     url='https://github.com/dickermoshe/nsfw_screen_detect',
     version='0.1.0',
     zip_safe=False,
+
 )
