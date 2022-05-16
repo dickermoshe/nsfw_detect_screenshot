@@ -13,7 +13,7 @@ requirements = [
     'opencv-python',
     'Pillow',
     'mss',
-    'pyautogui'
+    'pywinauto'
 ]
 
 setup(
