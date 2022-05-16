@@ -1,6 +1,9 @@
 
 # NSFW Screen Detect
 
+[![PyPi version](https://badgen.net/pypi/v/pip/)](https://pypi.org/project/nsfw-screen-detect/)
+
+
 A small python package for detecting nsfw on a Windows display.
 
 ```
