@@ -28,7 +28,7 @@ class Camera:
         Converts the image to the specified format.
         :param image: The image to convert.
         """
-        return cv.cvtColor(np.array(screenshot), cv.COLOR_BGR2RGB)
+        return np.array(screenshot)
 
     def take_screenshot_of_monitor(self,monitor : int = 0, parse_pics=False) -> Dict:
         """
