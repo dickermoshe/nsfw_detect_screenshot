@@ -3,12 +3,20 @@
 
 [![PyPi version](https://badgen.net/pypi/v/pip/)](https://pypi.org/project/nsfw-screen-detect/)
 
+A small python package for detecting NSFW content on a Windows display.
 
-A small python package for detecting nsfw on a Windows display.
+# Usage
+
+This package does the following by default:  
+1. Take a screenshot on all connected displays. You can take a screenshot of just the active window by passing `input='active_window'` to the `check` method.
+2. Detect actual images from the screenshot. You can skip this by passing `parse_images=False` to the `check` method.
+3. Use AI to detect how NSFW each image is. You can pass `check_type='skin'` to just get a skin color score.
+4. Returns each analyzed picture along with its results.
+
+# Examples
 
 ```
 # Import and initialize the main Checker class
-
 from nsfw_screen_detect import Checker
 checker = Checker()
 
