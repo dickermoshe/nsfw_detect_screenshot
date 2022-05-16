@@ -10,7 +10,7 @@ IMAGE_DIM = 256
 
 class Detector:
     def __init__(self) -> None:
-        model_path = str(Path( __file__ ).parent.absolute() / 'bin' /'lite_classifier')
+        model_path = str(Path( __file__ ).parent.absolute() / 'bin' /'lite_classifier.h5')
         self.interpreter = tf.lite.Interpreter(model_path=model_path)
         self.interpreter.allocate_tensors()
 

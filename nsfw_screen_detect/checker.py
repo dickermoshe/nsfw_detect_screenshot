@@ -1,6 +1,7 @@
 from .camera import Camera
 from .detector import Detector
-from .parser import Parser
+import cv2  as cv
+from PIL import Image
 
 class Checker:
     def __init__(self) -> None:
@@ -33,7 +34,9 @@ class Checker:
                 rating = self.detector.skin_rating_of_image(image)
             else:
                 raise ValueError("The check_type must be one of the following: nsfw, skin")
-            results['results'].append({'rating':rating,'image':image})
+
+            results['results'].append({'rating':rating,'image':Image.fromarray(cv.cvtColor(image, cv.COLOR_BGR2RGB))})
+
         return results
 
 

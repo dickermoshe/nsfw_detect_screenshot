@@ -1,0 +1,1 @@
+include nsfw_screen_detect/bin/lite_classifier.h5
