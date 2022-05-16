@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Dict
 import numpy as np 
-from PIL.Image import Image as PILImage
 import tensorflow as tf
 from pathlib import Path
 import cv2 as cv
@@ -15,9 +14,9 @@ class Detector:
         self.interpreter = tf.lite.Interpreter(model_path=model_path)
         self.interpreter.allocate_tensors()
 
-    def nsfw_rating_of_image(self,img : PILImage|np.ndarray) -> Dict:
-        if isinstance(img,np.ndarray):
-            img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
+    def nsfw_rating_of_image(self,img : np.ndarray) -> Dict:
+
+        img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
         input_details = self.interpreter.get_input_details()
         output_details = self.interpreter.get_output_details()
         img = self._img_to_array(img)
@@ -31,10 +30,7 @@ class Detector:
         output_data = self.interpreter.get_tensor(output_details[0]['index'])
         return  {"unsafe": output_data[0][0], "safe": output_data[0][1]}
         
-    def skin_rating_of_image(self,img : PILImage|np.ndarray) -> Dict:
-        
-        if isinstance(img,PILImage):
-            img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
+    def skin_rating_of_image(self,img : np.ndarray) -> Dict:
         
         #converting from gbr to hsv color space
         img_HSV = cv.cvtColor(img, cv.COLOR_BGR2HSV)
@@ -62,8 +58,8 @@ class Detector:
         skin_percentage = (skin_pixels / total_pixels) * 100
         return {
             'percentage':skin_percentage,
-            'skin_pixels':skin_pixels,
-            'total_pixels':total_pixels
+            'skin_pixel_count':skin_pixels,
+            'total_pixel_count':total_pixels
             }
 
     def _img_to_array(self,img, data_format='channels_last', dtype='float32'):

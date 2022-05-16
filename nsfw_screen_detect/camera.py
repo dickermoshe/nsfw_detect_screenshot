@@ -1,9 +1,7 @@
 from pprint import pprint as pp
-from typing import List
+from typing import Dict, List
 
-from PIL import ImageGrab
 from PIL.Image import Image
-from PIL import Image as PILImage
 
 from mss import mss
 from mss.screenshot import ScreenShot
@@ -11,33 +9,20 @@ from mss.screenshot import ScreenShot
 import numpy as np
 import cv2 as cv
 
+from.parser import Parser
 from .windows import Apps
 
 class Camera:
     def __init__(self) -> None:
         self.sct = mss()
-
+    
     def _pillow_to_opencv(self,image : Image) -> np.ndarray:
         """
         Converts the image to the specified format.
         :param image: The image to convert.
         """
         return cv.cvtColor(np.array(image), cv.COLOR_RGB2BGR)
-    
-    def _opencv_to_pillow(self,image : np.ndarray) -> Image:
-        """
-        Converts the image to the specified format.
-        :param image: The image to convert.
-        """
-        return PILImage.fromarray(cv.cvtColor(image, cv.COLOR_BGR2RGB))
 
-    def _mss_to_pillow(self,screenshot:ScreenShot) -> Image:
-        """
-        Converts the image to the specified format.
-        :param image: The image to convert.
-        """
-        return PILImage.frombytes("RGB", screenshot.size, screenshot.bgra, "raw", "BGRX")
-    
     def _mss_to_opencv(self,screenshot:ScreenShot) -> np.ndarray:
         """
         Converts the image to the specified format.
@@ -45,11 +30,10 @@ class Camera:
         """
         return cv.cvtColor(np.array(screenshot), cv.COLOR_BGR2RGB)
 
-    def take_screenshot_of_monitor(self,monitor : int = 0,_format :str = 'pillow') -> List[Image|np.ndarray]:
+    def take_screenshot_of_monitor(self,monitor : int = 0, parse_pics=False) -> Dict:
         """
         Takes a screenshot of the monitor.
         :param monitor: The monitor to take a screenshot of. 0 will take of all the monitors.
-        :param _format: The format to return the image in.
         """
         # Create a list of all the screens
         if monitor == 0:
@@ -66,18 +50,16 @@ class Camera:
             sct_img = self.sct.grab(monitor)
             images_array.append(sct_img)
         
-        # Convert the images to the format specified
-        if _format == 'pillow':
-            images = [self._mss_to_pillow(sct_img) for sct_img in images_array]
-        elif _format == 'opencv':
-            images = [self._mss_to_opencv(sct_img) for sct_img in images_array]
-        else:
-            raise ValueError("The format is not supported.")
+        # Convert the images to opencv
+        images = [self._mss_to_opencv(v) for v in images_array]
+        title = 'Monitor'
+        if parse_pics:
+            images = self.real_pics_from_image(images)
 
         # Return the images
-        return images
+        return {'title':title,'images':images}
 
-    def take_screenshot_of_active_window(self,_format :str = 'pillow') -> Image|np.ndarray:
+    def take_screenshot_of_active_window(self,parse_pics=False) -> Dict:
         """
         Takes a screenshot of the active window.
         :param _format: The format to return the image in.
@@ -88,10 +70,18 @@ class Camera:
         
         window_img = active_window.capture_as_image()
 
+        images = [self._pillow_to_opencv(window_img)]
+        title = active_window.window_text()
+        if parse_pics:
+            images = self.real_pics_from_image(images)
+        
+        # Return the images
+        return {'title':title,'images':images}
+    
+    def real_pics_from_image(self,images :List[np.ndarray]):
+        image_list = []
+        for img in images:
+            image_list.extend(Parser.parse_real_pictures(img))
+        return image_list
 
-        if _format == 'pillow':
-            return window_img
-
-        elif _format == 'opencv':
-            return self._pillow_to_opencv(window_img)
     

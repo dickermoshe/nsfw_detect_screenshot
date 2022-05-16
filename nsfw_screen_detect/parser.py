@@ -1,18 +1,14 @@
 from typing import List
 import cv2 as cv
 import numpy as np
-from PIL import Image
 
 class Parser:
     @staticmethod
-    def parse_real_pictures(img:Image.Image|np.ndarray) -> List[np.ndarray]:
+    def parse_real_pictures(img:np.ndarray) -> List[np.ndarray]:
         """
         :param rectangles: list of rectangles
-        :return: Image with rectangles drawn on it
+        :return: list of images in numpy array
         """
-        if isinstance(img,Image.Image):
-            img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
-
         shifted_up = np.roll(img, 1, axis=0)
         # Shift the image down one pixel
         shifted_down = np.roll(img, -1, axis=0)
@@ -31,7 +27,7 @@ class Parser:
         diff = cv.absdiff(img, mask)
 
         # Threshhold any pixels that are not black
-        ret, thresh = cv.threshold(diff, 0, 255, cv.THRESH_BINARY)
+        _, thresh = cv.threshold(diff, 0, 255, cv.THRESH_BINARY)
 
         # Make the image grayscale
         gray = cv.cvtColor(thresh, cv.COLOR_BGR2GRAY)
@@ -40,7 +36,7 @@ class Parser:
         #blurred = cv.GaussianBlur(gray, (5, 5), 0)
 
         # Find the contours
-        contours, hierarchy = cv.findContours(gray, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv.findContours(gray, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
         # Remove the contours that are too small
         contours = [c for c in contours if cv.contourArea(c) > 1000]
@@ -55,11 +51,6 @@ class Parser:
                 continue
 
             bounding_boxes.append((x,y,w,h))
-
-        # # Draw the bounding boxes
-        # for box in bounding_boxes:
-        #     x,y,w,h = box
-        #     cv.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
         
         # Save the image
         images= []
