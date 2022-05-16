@@ -8,7 +8,7 @@ class Checker:
         self.camera = Camera()
         self.detector = Detector()
     
-    def check(self,input:str = 'monitors',check_type : str = 'nsfw', parse_images:bool=True):
+    def check(self,input:str = 'monitors',check_type : str = 'nsfw', parse_images:bool=True,skin_threshold:float=0) -> dict:
         """
         Checks the specified input for inappropriate content.
 
@@ -19,6 +19,7 @@ class Checker:
             - nsfw - NSFW content
             - skin - Skin content
         :param parse_images: Whether to parse individual images from the input or to process the entire input at once.
+        :param skin_threshold: How much skin content needed to run the nsfw detection. If you want to run the nsfw detection even if there is no skin content, set this to 0.
         """
 
         if input == 'monitors':
@@ -28,15 +29,15 @@ class Checker:
 
         results = {'title':images['title'],'results':[]}
         for image in images['images']:
-            if check_type == 'nsfw':
-                rating = self.detector.nsfw_rating_of_image(image)
-            elif check_type == 'skin':
-                rating = self.detector.skin_rating_of_image(image)
+            skin_rating = self.detector.skin_rating_of_image(image)
+
+            if check_type == 'skin' or skin_rating['percentage'] < skin_threshold:
+                results['results'].append({'image':Image.fromarray(cv.cvtColor(image, cv.COLOR_BGR2RGB)),'skin_rating':skin_rating,'nsfw_rating':None})
+                continue
             else:
-                raise ValueError("The check_type must be one of the following: nsfw, skin")
-
-            results['results'].append({'rating':rating,'image':Image.fromarray(cv.cvtColor(image, cv.COLOR_BGR2RGB))})
-
+                nsfw_rating = self.detector.nsfw_rating_of_image(image)
+                results['results'].append({'image':Image.fromarray(cv.cvtColor(image, cv.COLOR_BGR2RGB)),'skin_rating':skin_rating,'nsfw_rating':nsfw_rating})
+                continue
         return results
 
 
