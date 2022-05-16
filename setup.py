@@ -39,7 +39,7 @@ setup(
     package_dir = {"": "src"},
     packages=find_packages(where="src"),
     url='https://github.com/dickermoshe/nsfw_detect_screenshot',
-    version='0.1.2',
+    version='0.2.0',
     zip_safe=False,
 
 )
